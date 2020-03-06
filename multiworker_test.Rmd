@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This script is just a test using tf.distributed with multiworker strategy. This code worked in my local ubuntu 18.04,  "locally" in the master machine in EMR and in the EMR machine using the workers ip's. 
 
-```{python}
+```{python eval=FALSE}
 import os
 import json
 import tensorflow as tf
@@ -42,6 +42,11 @@ strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
 ```
 
 
+Tensorboard
+```{python eval=FALSE}
+NAME = "test_log"
+tensorboard = TensorBoard(log_dir = 'logs/{}'.format(NAME), histogram_freq=1)
+```
 
 Here is just preparing the data for trainning
 ```{python eval=FALSE}
@@ -97,7 +102,7 @@ with strategy.scope():
 
 Finally :)
 ```{python eval=FALSE}
-multi_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5)
+multi_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5, callbacks=[tensorboard])
 ```
 
 ```

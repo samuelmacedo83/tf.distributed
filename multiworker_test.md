@@ -35,6 +35,13 @@ be configured at program startup
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
 ```
 
+Tensorboard
+
+``` python
+NAME = "test_log"
+tensorboard = TensorBoard(log_dir = 'logs/{}'.format(NAME), histogram_freq=1)
+```
+
 Here is just preparing the data for trainning
 
 ``` python
@@ -90,10 +97,11 @@ with strategy.scope():
   multi_worker_model = build_and_compile_cnn_model()
 ```
 
-Finally :)
+Finally
+:)
 
 ``` python
-multi_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5)
+multi_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5, callbacks=[tensorboard])
 ```
 
     Train for 5 steps
