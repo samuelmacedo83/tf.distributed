@@ -12,6 +12,20 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 ```
 
+for multiworker the cluster, worker and task need to be store in a
+enviroment variable named TF\_CONFIG and must be declared before
+strategy.
+
+``` python
+os.environ['TF_CONFIG'] = json.dumps({
+  'cluster': {
+    'worker': ["10.16.90.112:12345", "10.28.201.223:45282", "10.45.177.250:57780"]
+    # # "10.16.203.189:56936" one of the machines
+  },
+  'task': {'type': 'worker', 'index': 0}
+})
+```
+
 here is a bug in multiworker. Strategy needs to be the first command
 when using TF. This prevent the error: RuntimeError: Collective ops must
 be configured at program startup
@@ -19,19 +33,6 @@ be configured at program startup
 
 ``` python
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
-```
-
-for multiworker the cluster, worker and task need to be store in a
-enviroment variable named TF\_CONFIG
-
-``` python
-os.environ['TF_CONFIG'] = json.dumps({
-  'cluster': {
-    'worker': ["localhost:12345", "localhost:23456"]
-    # or your ip's ex.: ["11.22.333.444:12345", "22.33.444.555:12345"]
-  },
-  'task': {'type': 'worker', 'index': 0}
-})
 ```
 
 Here is just preparing the data for trainning
@@ -103,3 +104,39 @@ multi_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5)
     Epoch 3/3
     5/5 [==============================] - 0s 29ms/step - loss: 2.2903 - accuracy: 0.1187
     <tensorflow.python.keras.callbacks.History object at 0x7f21ac3e0350>
+
+### Other workers
+
+I’m running this in `10.28.201.223`
+
+``` python
+import os
+import json
+import tensorflow as tf
+import tensorflow_datasets as tfds
+
+os.environ['TF_CONFIG'] = json.dumps({
+  'cluster': {
+    'worker': ["10.16.90.112:12345", "10.28.201.223:45282", "10.45.177.250:57780"]
+    # # "10.16.203.189:56936" one of the machines
+  },
+  'task': {'type': 'worker', 'index': 1}
+})
+```
+
+and this in `10.45.177.250`
+
+``` python
+import os
+import json
+import tensorflow as tf
+import tensorflow_datasets as tfds
+
+os.environ['TF_CONFIG'] = json.dumps({
+  'cluster': {
+    'worker': ["10.16.90.112:12345", "10.28.201.223:45282", "10.45.177.250:57780"]
+    # # "10.16.203.189:56936" one of the machines
+  },
+  'task': {'type': 'worker', 'index': 2}
+})
+```
